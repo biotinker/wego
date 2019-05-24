@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/schachmat/ingo"
+	"github.com/biotinker/ingo"
 	_ "github.com/biotinker/wego/backends"
 	_ "github.com/biotinker/wego/frontends"
 	"github.com/biotinker/wego/iface"
