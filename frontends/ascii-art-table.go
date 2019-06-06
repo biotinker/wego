@@ -133,11 +133,41 @@ func (c *aatConfig) formatWind(cond iface.Cond) string {
 }
 
 func (c *aatConfig) formatVisibility(cond iface.Cond) string {
-	if cond.VisibleDistM == nil {
+	
+	color := func(spdKmph float32) string {
+		colmap := []struct {
+			maxtemp float32
+			color   int
+		}{
+			{0, 46}, {2, 82}, {4, 118}, {6, 154}, {8, 190},
+			{10, 226}, {12, 220}, {14, 214}, {28, 208}, {32, 202},
+		}
+
+		col := 196
+		for _, candidate := range colmap {
+			if spdKmph < candidate.maxtemp {
+				col = candidate.color
+				break
+			}
+		}
+
+		
+		return fmt.Sprintf("\033[38;5;%03dm%d\033[0m", col, int(spdKmph))
+	}
+	if cond.VisibleDistM == nil && cond.UvIndex == nil {
 		return aatPad("", 15)
 	}
+	if cond.VisibleDistM == nil{
+		return aatPad(fmt.Sprintf(" UV %d", int(*cond.UvIndex)), 15)
+	}
+	
+	if cond.UvIndex == nil{
+		v, u := c.unit.Distance(*cond.VisibleDistM)
+		return aatPad(fmt.Sprintf("%d %s  UV ERR", int(v), u, ), 15)
+	}
+	
 	v, u := c.unit.Distance(*cond.VisibleDistM)
-	return aatPad(fmt.Sprintf("%d %s", int(v), u), 15)
+	return aatPad(fmt.Sprintf("%d %s  UV %s", int(v), u, color(*cond.UvIndex)), 15)
 }
 
 func (c *aatConfig) formatRain(cond iface.Cond) string {
@@ -333,6 +363,10 @@ func (c *aatConfig) printDay(day iface.Day) (ret []string) {
 		12 * time.Hour,
 		19 * time.Hour,
 		23 * time.Hour,
+		//~ 1 * time.Hour,
+		//~ 5 * time.Hour,
+		//~ 12 * time.Hour,
+		//~ 16 * time.Hour,
 	}
 	ret = make([]string, 5)
 	for i := range ret {
@@ -346,7 +380,11 @@ func (c *aatConfig) printDay(day iface.Day) (ret []string) {
 		cand := candidate.Time.UTC().Sub(candidate.Time.Truncate(24 * time.Hour))
 		for i, col := range cols {
 			cur := col.Time.Sub(col.Time.Truncate(24 * time.Hour))
+			//~ log.Printf("cur %s",  col.Time)
+			//~ log.Printf("cur %s",  cur)
+			//~ log.Printf("cand %s",  cand)
 			if col.Time.IsZero() || math.Abs(float64(cand-desiredTimesOfDay[i])) < math.Abs(float64(cur-desiredTimesOfDay[i])) {
+				//~ log.Printf("SELECTED %d", i)
 				cols[i] = candidate
 			}
 		}

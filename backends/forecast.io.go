@@ -33,6 +33,7 @@ type forecastDataPoint struct {
 	WindSpeed           *float32 `json:"windSpeed"`
 	WindBearing         *float32 `json:"windBearing"`
 	Visibility          *float32 `json:"visibility"`
+	UvIndex             *float32 `json:"uvIndex"`
 	Humidity            *float32 `json:"humidity"`
 }
 
@@ -143,6 +144,11 @@ func (c *forecastConfig) parseCond(dp forecastDataPoint) (ret iface.Cond, err er
 	if dp.Visibility != nil && *dp.Visibility >= 0 {
 		p := *dp.Visibility * 1000
 		ret.VisibleDistM = &p
+	}
+
+	if dp.UvIndex != nil && *dp.UvIndex >= 0 {
+		p := *dp.UvIndex
+		ret.UvIndex = &p
 	}
 
 	if dp.WindSpeed != nil && *dp.WindSpeed >= 0 {

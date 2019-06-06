@@ -55,6 +55,9 @@ type Cond struct {
 	// PrecipM is the precipitation amount in meters(!) per hour. Must be >= 0.
 	PrecipM *float32
 
+	// UvIndex is the UV Index. It must be >= 0.
+	UvIndex *float32
+
 	// VisibleDistM is the visibility range in meters(!). It must be >= 0.
 	VisibleDistM *float32
 
