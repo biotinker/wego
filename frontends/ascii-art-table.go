@@ -359,14 +359,12 @@ func (c *aatConfig) formatGeo(coords *iface.LatLon) (ret string) {
 
 func (c *aatConfig) printDay(day iface.Day) (ret []string) {
 	desiredTimesOfDay := []time.Duration{
-		8 * time.Hour,
-		12 * time.Hour,
+		7 * time.Hour,
+		10 * time.Hour,
+		13 * time.Hour,
+		16 * time.Hour,
 		19 * time.Hour,
-		23 * time.Hour,
-		//~ 1 * time.Hour,
-		//~ 5 * time.Hour,
-		//~ 12 * time.Hour,
-		//~ 16 * time.Hour,
+		22 * time.Hour,
 	}
 	ret = make([]string, 5)
 	for i := range ret {
@@ -377,14 +375,11 @@ func (c *aatConfig) printDay(day iface.Day) (ret []string) {
 	cols := make([]iface.Cond, len(desiredTimesOfDay))
 	// find hourly data which fits the desired times of day best
 	for _, candidate := range day.Slots {
-		cand := candidate.Time.UTC().Sub(candidate.Time.Truncate(24 * time.Hour))
+		
+		cand := time.Duration(int64(candidate.Time.Hour())) * time.Hour
 		for i, col := range cols {
-			cur := col.Time.Sub(col.Time.Truncate(24 * time.Hour))
-			//~ log.Printf("cur %s",  col.Time)
-			//~ log.Printf("cur %s",  cur)
-			//~ log.Printf("cand %s",  cand)
+			cur := time.Duration(int64(col.Time.Hour())) * time.Hour
 			if col.Time.IsZero() || math.Abs(float64(cand-desiredTimesOfDay[i])) < math.Abs(float64(cur-desiredTimesOfDay[i])) {
-				//~ log.Printf("SELECTED %d", i)
 				cols[i] = candidate
 			}
 		}
@@ -399,13 +394,13 @@ func (c *aatConfig) printDay(day iface.Day) (ret []string) {
 
 	dateFmt := "┤ " + day.Date.Format("Mon 02. Jan") + " ├"
 	ret = append([]string{
-		"                                                       ┌─────────────┐                                                       ",
-		"┌──────────────────────────────┬───────────────────────" + dateFmt + "───────────────────────┬──────────────────────────────┐",
-		"│           Morning            │             Noon      └──────┬──────┘    Evening            │            Night             │",
-		"├──────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────────────────────────┤"},
+		"                                                                                      ┌─────────────┐                                                                                      ",
+		"┌──────────────────────────────┬──────────────────────────────┬───────────────────────" + dateFmt + "───────────────────────┬──────────────────────────────┐──────────────────────────────┬",
+		"│            7 AM              │            10 AM             │             1 PM      └──────┬──────┘     4 PM              │            7 PM              │            10 PM             │",
+		"├──────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────────────────────────┤──────────────────────────────┼"},
 		ret...)
 	return append(ret,
-		"└──────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────┘")
+		"└──────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────┘")
 }
 
 func (c *aatConfig) Setup() {
