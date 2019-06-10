@@ -134,25 +134,25 @@ func (c *aatConfig) formatWind(cond iface.Cond) string {
 
 func (c *aatConfig) formatVisibility(cond iface.Cond) string {
 	
-	color := func(spdKmph float32) string {
+	color := func(uvInd float32) string {
 		colmap := []struct {
 			maxtemp float32
 			color   int
 		}{
-			{0, 46}, {2, 82}, {4, 118}, {6, 154}, {8, 190},
-			{10, 226}, {12, 220}, {14, 214}, {28, 208}, {32, 202},
+			{0, 46}, {2, 82}, {4, 154}, {6, 190}, {8, 226},
+			{10, 214}, {12, 208}, {14, 202},
 		}
 
 		col := 196
 		for _, candidate := range colmap {
-			if spdKmph < candidate.maxtemp {
+			if uvInd < candidate.maxtemp {
 				col = candidate.color
 				break
 			}
 		}
 
 		
-		return fmt.Sprintf("\033[38;5;%03dm%d\033[0m", col, int(spdKmph))
+		return fmt.Sprintf("\033[38;5;%03dm%d\033[0m", col, int(uvInd))
 	}
 	if cond.VisibleDistM == nil && cond.UvIndex == nil {
 		return aatPad("", 15)
