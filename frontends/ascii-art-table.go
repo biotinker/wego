@@ -113,9 +113,9 @@ func (c *aatConfig) formatWind(cond iface.Cond) string {
 	//Diagonal arrows register as length 2, even though they're rendered with length 1
 	//So add an extra space if we'll be selecting one (odd numbered array indices)
 	final_len := 15
-	if ((*cond.WinddirDegree+22)%360)/45 % 2 == 1 {
-		final_len = 16
-	}
+	//~ if ((*cond.WinddirDegree+22)%360)/45 % 2 == 1 {
+		//~ final_len = 16
+	//~ }
 	
 
 	if cond.WindspeedKmph == nil {
